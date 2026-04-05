@@ -1,0 +1,87 @@
+name: Domain Monitor
+
+on:
+  schedule:
+    # Run daily at 07:00 UTC (adjust to taste)
+    - cron: '0 7 * * *'
+  # Allow manual trigger from the Actions tab
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run Domain Monitor
+        env:
+          # --- Required: at least one domain ---
+          # Set DOMAIN as a repository variable (Settings → Variables → Actions)
+          # For multiple domains, separate with spaces: "example.com other.com"
+          DOMAIN: ${{ vars.DOMAIN }}
+
+          # --- Notification: email (optional, but recommended for GitHub Actions) ---
+          # Set these as encrypted secrets (Settings → Secrets → Actions)
+          SMTP_USER:     ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          # Override these repository variables if not using Gmail defaults
+          SMTP_HOST: ${{ vars.SMTP_HOST }}
+          SMTP_PORT: ${{ vars.SMTP_PORT }}
+
+          # --- Notification: destination ---
+          NOTIFY_EMAIL: ${{ vars.NOTIFY_EMAIL }}
+
+          # --- Scope & thresholds ---
+          SCOPE:      ${{ vars.SCOPE }}       # whois,dns,ssl  or  all
+          WARN_DAYS:  ${{ vars.WARN_DAYS }}   # e.g. 30
+
+        run: |
+          SCOPE="${SCOPE:-all}"
+          WARN_DAYS="${WARN_DAYS:-30}"
+
+          for DOMAIN_ITEM in $DOMAIN; do
+            echo ""
+            echo "========================================="
+            echo "Checking: $DOMAIN_ITEM"
+            echo "========================================="
+
+            CMD="python domain_monitor.py \
+              --domain \"$DOMAIN_ITEM\" \
+              --scope \"$SCOPE\" \
+              --warn-days \"$WARN_DAYS\" \
+              --state-dir state"
+
+            if [ -n "$NOTIFY_EMAIL" ]; then
+              CMD="$CMD --notify-email \"$NOTIFY_EMAIL\""
+            fi
+
+            eval $CMD
+          done
+
+      - name: Commit state changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name  "github-actions[bot]"
+
+          git add state/
+          if git diff --cached --quiet; then
+            echo "No state changes to commit."
+          else
+            git commit -m "chore: update domain monitor state [skip ci]"
+            git push
+            echo "State committed and pushed."
+          fi

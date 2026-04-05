@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "domain-monitor"
+version = "0.1.0"
+description = "A lightweight tool that watches a domain for externally observable changes and notifies you when anything shifts"
+readme = "README.md"
+license = "MIT"
+authors = [{name = "Andy"}]
+requires-python = ">=3.6"
+dependencies = [
+    "dnspython>=2.7.0",
+    "python-whois>=0.9.4",
+    "requests>=2.32.3",
+]
+
+[project.scripts]
+domain-monitor = "domain_monitor:main"
+
+[tool.setuptools]
+py-modules = ["domain_monitor"]
