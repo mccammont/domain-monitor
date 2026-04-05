@@ -6,9 +6,9 @@ name: Private Domain Monitor
 # The code will be pulled from the Public repo upon each run
 
 on:
-  #schedule:
+  # schedule:
   #  - cron: '0 7 * * *'  # Daily at 07:00 UTC
-  # workflow_dispatch:     # Allow manual trigger
+  workflow_dispatch:     # Allow manual trigger
 
 permissions:
   contents: write
