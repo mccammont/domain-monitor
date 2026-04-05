@@ -22,7 +22,7 @@ jobs:
 
     steps:
       - name: Checkout private repo (for state storage)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           persist-credentials: true
 
@@ -30,7 +30,7 @@ jobs:
         run: git clone --depth 1 https://github.com/mccammont/domain-monitor.git public-code
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.11'
 
