@@ -1,0 +1,72 @@
+name: Private Domain Monitor
+
+# use this workflow if you don't want your statefiles to be publicly visible
+# create a private repo, put this workflow file in placei, uncomment the cron lines
+# and configure the secrets as normal. Your statefiles will be kept private
+# The code will be pulled from the Public repo upon each run
+
+on:
+  #schedule:
+  #  - cron: '0 7 * * *'  # Daily at 07:00 UTC
+  # workflow_dispatch:     # Allow manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout private repo (for state storage)
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Clone public repo (for latest code)
+        run: git clone --depth 1 https://github.com/mccammont/domain-monitor.git public-code
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          cd public-code
+          pip install -r requirements.txt
+
+      - name: Ensure state directory exists
+        run: mkdir -p state
+
+      - name: Run domain monitor
+        run: |
+          cd public-code
+          for domain in ${{ vars.DOMAIN }}; do
+            python domain_monitor.py \
+              --domain "$domain" \
+              --scope "${{ vars.SCOPE }}" \
+              --warn-days "${{ vars.WARN_DAYS }}" \
+              --notify-email "${{ vars.NOTIFY_EMAIL }}" \
+              --state-dir ../state \
+              --verbose
+          done
+        env:
+          SMTP_HOST: ${{ vars.SMTP_HOST }}
+          SMTP_PORT: ${{ vars.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+
+      - name: Commit state changes back to private repo
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          git add state/
+          if git diff --cached --quiet; then
+            echo "No state changes to commit."
+          else
+            git commit -m "chore: update domain monitor state [skip ci]"
+            git push
+            echo "State committed and pushed."
+          fi

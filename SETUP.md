@@ -238,6 +238,11 @@ After each run the bot commits the updated `state/*.json` files back to the repo
 
 ## 9. Monitoring multiple domains
 
+Don't want your statefiles to be publicly visible or people to know what domains you're monitoring?
+No problem, Clone into a private repo, or take a look at `.github/workflows/private-monitor.yml` 
+
+## 10. Monitoring multiple domains
+
 Each domain gets its own state file in your platform-specific state directory. On the command line, just run the script once per domain (cron handles this naturally):
 
 ```cron
@@ -246,3 +251,4 @@ Each domain gets its own state file in your platform-specific state directory. O
 ```
 
 On GitHub Actions, set `DOMAIN` to a space-separated list and the workflow loops over each one automatically.
+
