@@ -204,9 +204,11 @@ launchctl load ~/Library/LaunchAgents/com.domain-monitor.example.com.plist
 
 This is the recommended option for reliability — GitHub runs it in the cloud so your Mac doesn't need to be on.
 
-### Step 1: Create the repository
+This public repository is configured for manual workflow execution by default. The `.github/workflows/monitor.yml` file includes a commented-out `schedule:` block. Uncomment that block and commit the workflow file to enable daily scheduled runs.
 
-Push this project to a **private** GitHub repository.
+### Step 1: Place the workflow file
+
+Add `.github/workflows/monitor.yml` to the repository.
 
 ### Step 2: Set secrets (Settings → Secrets and variables → Actions → Secrets)
 
@@ -226,11 +228,9 @@ Push this project to a **private** GitHub repository.
 | `SMTP_HOST` | `smtp.gmail.com` | Leave blank to use Gmail default |
 | `SMTP_PORT` | `465` | Leave blank to use default |
 
-### Step 4: Enable the workflow
+### Step 4: Run the workflow
 
-Go to **Actions** → **Domain Monitor** → click **Enable workflow**.
-
-The workflow runs daily at 07:00 UTC. You can also trigger it manually from the Actions tab using **Run workflow**.
+Go to **Actions** → **Domain Monitor** → click **Run workflow**. To enable scheduled automation, uncomment the `schedule:` / `cron:` block in `.github/workflows/monitor.yml`, commit, and push.
 
 ### How state is stored on GitHub Actions
 

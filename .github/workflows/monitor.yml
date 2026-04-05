@@ -1,9 +1,10 @@
 name: Domain Monitor
 
 on:
-  schedule:
-    # Run daily at 07:00 UTC (adjust to taste)
-    - cron: '0 7 * * *'
+  # Enable automated daily runs by uncommenting the schedule block below.
+  # schedule:
+  #   # Run daily at 07:00 UTC (adjust to taste)
+  #   - cron: '0 7 * * *'
   # Allow manual trigger from the Actions tab
   workflow_dispatch:
 
