@@ -1,8 +1,11 @@
 name: Private Domain Monitor
 
 # use this workflow if you don't want your statefiles to be publicly visible
-# create a private repo, put this workflow file in placei, uncomment the cron lines
-# and configure the secrets as normal. Your statefiles will be kept private
+# create a private repo eg domain-monitor-private
+# put this workflow file in place, uncomment the cron lines
+# and configure the secrets as normal. 
+# remove the state line from .gitignore
+# Your statefiles will be stored in your private repo
 # The code will be pulled from the Public repo upon each run
 
 on:
