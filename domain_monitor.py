@@ -342,8 +342,8 @@ def _expiry_warnings(state: Dict, warn_days: int, domain: str) -> List[str]:
 # ---------------------------------------------------------------------------
 
 def notify_email(to_email: str, subject: str, body: str) -> None:
-    smtp_host = os.environ.get("SMTP_HOST", "smtp.gmail.com")
-    smtp_port = int(os.environ.get("SMTP_PORT", "465"))
+    smtp_host = (os.environ.get("SMTP_HOST") or "smtp.gmail.com").strip() or "smtp.gmail.com"
+    smtp_port = int((os.environ.get("SMTP_PORT") or "465").strip() or "465")
     smtp_user = os.environ.get("SMTP_USER") or os.environ.get("EMAIL_USER")
     smtp_pass = os.environ.get("SMTP_PASSWORD") or os.environ.get("EMAIL_PASSWORD")
 
