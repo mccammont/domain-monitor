@@ -72,3 +72,21 @@ RDAP (RFC 7483) is the IANA-standardised replacement for legacy WHOIS. It return
 ## State storage
 
 Each domain's baseline snapshot is stored as a JSON file in the `state/` directory. On GitHub Actions the bot commits state back to the repository after each run — the commit message contains `[skip ci]` to prevent a recursive trigger.
+
+## GitHub Actions
+
+This repository’s workflow is configured as a manual trigger by default. The workflow file includes a commented-out `schedule:` block in `.github/workflows/monitor.yml`; uncomment the cron entry to enable daily scheduled runs.
+
+Required GitHub Actions configuration:
+
+- `DOMAIN`
+- `NOTIFY_EMAIL`
+- `SCOPE`
+- `WARN_DAYS`
+- `SMTP_HOST`
+- `SMTP_PORT`
+- `SMTP_USER`
+- `SMTP_PASSWORD`
+
+For local usage and installation options, keep following the instructions in this README and `SETUP.md`.
+
