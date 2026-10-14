@@ -203,9 +203,11 @@ def get_dns_records(domain: str, include_soa: bool = False) -> Dict[str, List[st
     """Fetch standard DNS records plus DMARC TXT."""
     records: Dict[str, List[str]] = {}
 
-    record_types = DNS_RECORD_TYPES if include_soa else [
-        rtype for rtype in DNS_RECORD_TYPES if rtype != "SOA"
-    ]
+    record_types = (
+        DNS_RECORD_TYPES
+        if include_soa
+        else [rtype for rtype in DNS_RECORD_TYPES if rtype != "SOA"]
+    )
     for rtype in record_types:
         try:
             answers = dns.resolver.resolve(domain, rtype)
