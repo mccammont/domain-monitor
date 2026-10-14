@@ -199,11 +199,14 @@ def get_registration_data(domain: str) -> Dict[str, Any]:
 DNS_RECORD_TYPES = ["A", "AAAA", "MX", "NS", "TXT", "CAA", "SOA"]
 
 
-def get_dns_records(domain: str) -> Dict[str, List[str]]:
+def get_dns_records(domain: str, include_soa: bool = False) -> Dict[str, List[str]]:
     """Fetch standard DNS records plus DMARC TXT."""
     records: Dict[str, List[str]] = {}
 
-    for rtype in DNS_RECORD_TYPES:
+    record_types = DNS_RECORD_TYPES if include_soa else [
+        rtype for rtype in DNS_RECORD_TYPES if rtype != "SOA"
+    ]
+    for rtype in record_types:
         try:
             answers = dns.resolver.resolve(domain, rtype)
             records[rtype] = sorted([rdata.to_text() for rdata in answers])
@@ -289,7 +292,9 @@ def get_ssl_info(domain: str, port: int = 443) -> Dict[str, Any]:
 # ---------------------------------------------------------------------------
 
 
-def collect_state(domain: str, scope: List[str]) -> Dict[str, Any]:
+def collect_state(
+    domain: str, scope: List[str], include_soa: bool = False
+) -> Dict[str, Any]:
     """Collect current WHOIS, DNS, and SSL state for the domain."""
     state: Dict[str, Any] = {"collected_at": datetime.now(timezone.utc).isoformat()}
 
@@ -299,7 +304,7 @@ def collect_state(domain: str, scope: List[str]) -> Dict[str, Any]:
 
     if "dns" in scope:
         log.info("Fetching DNS records for %s…", domain)
-        state["dns"] = get_dns_records(domain)
+        state["dns"] = get_dns_records(domain, include_soa=include_soa)
 
     if "ssl" in scope:
         log.info("Fetching SSL certificate for %s…", domain)
@@ -657,7 +662,7 @@ Environment variables for email:
     log.info("Monitoring %s | scope: %s | warn-days: %d", domain, scope, args.warn_days)
 
     # Collect fresh data
-    current_state = collect_state(domain, scope)
+    current_state = collect_state(domain, scope, include_soa=args.verbose)
 
     # Load previous run
     previous_state = load_state(args.state_dir, domain)

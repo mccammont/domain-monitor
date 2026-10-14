@@ -5,6 +5,7 @@ A lightweight, dependency-minimal tool that watches a domain for externally obse
 ## Installation
 
 ### From Source
+
 ```bash
 git clone <repository-url>
 cd domain-monitor
@@ -12,7 +13,9 @@ pip install -e .
 ```
 
 ### From Distributable Files
+
 Download the `.whl` or `.tar.gz` file and install:
+
 ```bash
 pip install domain_monitor-0.1.0.tar.gz
 # or
@@ -24,22 +27,22 @@ After installation, use `domain-monitor` instead of `python domain_monitor.py`.
 ## Who is it for?
 
 | User | Use-case |
-|---|---|
+| --- | --- |
 | **Buyer** | Watching an expiring domain — get alerted as the WHOIS expiry approaches and as the domain status changes (e.g. `redemptionPeriod` → `pendingDelete` → gone) |
 | **Owner** | Get alerted the moment your DNS records, WHOIS data, or SSL certificate changes unexpectedly |
 
 ## What does it monitor?
 
 | Scope | What's checked |
-|---|---|
+| --- | --- |
 | `whois` | Registrar, status flags, creation / expiry / updated dates, nameservers (via **RDAP** first, raw WHOIS fallback) |
-| `dns` | A, AAAA, MX, NS, TXT, CAA, SOA records + DMARC (`_dmarc.domain`) |
+| `dns` | A, AAAA, MX, NS, TXT, CAA records + DMARC (`_dmarc.domain`); SOA is checked only with `--verbose` (`-v`) |
 | `ssl` | Certificate issuer, subject CN, SANs, expiry date |
 
 ## Notification channels (both free, no third parties)
 
 | Channel | How to use | Credentials needed |
-|---|---|---|
+| --- | --- | --- |
 | **Email** | `--notify-email you@example.com` | SMTP env vars (App Password for Gmail) |
 | **macOS notification** | `--notify-macos` | None — uses `osascript` built into macOS |
 
@@ -65,6 +68,11 @@ domain-monitor --domain example.com --notify-email you@example.com
 
 See [SETUP.md](SETUP.md) for full setup instructions including crontab and GitHub Actions.
 
+## Why is SOA not checked by default?
+
+Many DNS providers automatically update SOA records when they undertake maintenance.
+As such, changes to SOA records are often not intereesting, so are only tracked if the --verbose flag is given
+
 ## Why RDAP instead of WHOIS?
 
 RDAP (RFC 7483) is the IANA-standardised replacement for legacy WHOIS. It returns structured JSON rather than free-form text, is more reliable across TLDs, and is rate-limited per registrar rather than globally. This tool tries RDAP first via the IANA bootstrap registry (`data.iana.org/rdap/dns.json`) and falls back to raw WHOIS only when RDAP isn't available for a given TLD.
@@ -89,4 +97,3 @@ Required GitHub Actions configuration:
 - `SMTP_PASSWORD`
 
 For local usage and installation options, keep following the instructions in this README and `SETUP.md`.
-

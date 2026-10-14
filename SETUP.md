@@ -44,6 +44,7 @@ domain-monitor --domain example.com
 ```
 
 A file will be created in your platform-specific state directory:
+
 - **macOS**: `~/Library/Application Support/domain-monitor/example.com.json`
 - **Linux**: `~/.local/share/domain-monitor/example.com.json` (respects `$XDG_STATE_HOME`)
 - **Windows**: `%LOCALAPPDATA%/domain-monitor/example.com.json`
@@ -52,7 +53,7 @@ Subsequent runs compare against this baseline.
 
 ## 4. CLI reference
 
-```
+```text
 domain-monitor [options]
 
 Required:
@@ -94,7 +95,7 @@ domain-monitor --domain example.com --state-dir /path/to/custom/state
 Email is sent via SMTP. The following environment variables are supported:
 
 | Variable | Default | Description |
-|---|---|---|
+| --- | --- | --- |
 | `SMTP_HOST` | `smtp.gmail.com` | SMTP server hostname |
 | `SMTP_PORT` | `465` | SMTP port (465 = SSL, 587 = STARTTLS) |
 | `SMTP_USER` | *(required)* | Sender email address |
@@ -196,6 +197,7 @@ Create `~/Library/LaunchAgents/com.domain-monitor.example.com.plist`:
 ```
 
 Load it:
+
 ```bash
 launchctl load ~/Library/LaunchAgents/com.domain-monitor.example.com.plist
 ```
@@ -213,14 +215,14 @@ Add `.github/workflows/monitor.yml` to the repository.
 ### Step 2: Set secrets (Settings → Secrets and variables → Actions → Secrets)
 
 | Secret | Value |
-|---|---|
+| --- | --- |
 | `SMTP_USER` | Your email address |
 | `SMTP_PASSWORD` | Your App Password |
 
 ### Step 3: Set variables (Settings → Secrets and variables → Actions → Variables)
 
 | Variable | Example | Notes |
-|---|---|---|
+| --- | --- | --- |
 | `DOMAIN` | `example.com` | Space-separated for multiple: `"a.com b.com"` |
 | `NOTIFY_EMAIL` | `you@example.com` | Where to send alerts |
 | `SCOPE` | `all` | `whois`, `dns`, `ssl`, or `all` |
@@ -239,7 +241,7 @@ After each run the bot commits the updated `state/*.json` files back to the repo
 ## 9. Monitoring multiple domains
 
 Don't want your statefiles to be publicly visible or people to know what domains you're monitoring?
-No problem, Clone into a private repo, or take a look at `.github/workflows/private-monitor.yml` 
+No problem, Clone into a private repo, or take a look at `.github/workflows/private-monitor.yml`
 
 ## 10. Monitoring multiple domains
 
@@ -251,4 +253,3 @@ Each domain gets its own state file in your platform-specific state directory. O
 ```
 
 On GitHub Actions, set `DOMAIN` to a space-separated list and the workflow loops over each one automatically.
-
